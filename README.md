@@ -44,10 +44,18 @@ Below you find a comparison between this image and the most used or original one
 # COMPOSE ✂️
 ```yaml
 name: "arrs"
+
+x-lockdown: &lockdown
+  # prevents write access to the image itself
+  read_only: true
+  # prevents any process within the container to gain more privileges
+  security_opt:
+    - "no-new-privileges=true"
+
 services:
   lidarr:
     image: "11notes/lidarr:2.12.4"
-    read_only: true
+    <<: *lockdown
     environment:
       TZ: "Europe/Zurich"
     volumes:
@@ -117,4 +125,4 @@ docker pull quay.io/11notes/lidarr:2.12.4
 # ElevenNotes™️
 This image is provided to you at your own risk. Always make backups before updating an image to a different version. Check the [releases](https://github.com/11notes/docker-lidarr/releases) for breaking changes. If you have any problems with using this image simply raise an [issue](https://github.com/11notes/docker-lidarr/issues), thanks. If you have a question or inputs please create a new [discussion](https://github.com/11notes/docker-lidarr/discussions) instead of an issue. You can find all my other repositories on [github](https://github.com/11notes?tab=repositories).
 
-*created 12.08.2025, 16:18:43 (CET)*
+*created 12.08.2025, 16:20:58 (CET)*
