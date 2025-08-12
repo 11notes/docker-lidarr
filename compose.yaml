@@ -1,0 +1,23 @@
+name: "arrs"
+services:
+  lidarr:
+    image: "11notes/lidarr:2.12.4"
+    read_only: true
+    environment:
+      TZ: "Europe/Zurich"
+    volumes:
+      - "lidarr.etc:/lidarr/etc"
+    tmpfs:
+      # required for read-only image
+      - "/tmp:uid=1000,gid=1000"
+    ports:
+      - "3000:8686/tcp"
+    networks:
+      frontend:
+    restart: "always"
+
+volumes:
+  lidarr.etc:
+
+networks:
+  frontend:

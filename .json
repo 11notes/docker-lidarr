@@ -1,0 +1,26 @@
+{
+  "image": "11notes/lidarr",
+  "name": "lidarr",
+  "root": "/lidarr",
+  "build": {
+    "args": {
+      "version_build": "4658"
+    }
+  },
+  "semver": {
+    "version": "2.12.4"
+  },
+  "readme": {
+    "description": "Run Lidarr smaller, lightweight and more secure than ever",
+    "introduction": "Lidarr is a music collection manager for Usenet and BitTorrent users. It can monitor multiple RSS feeds for new tracks from your favorite artists and will grab, sort and rename them. It can also be configured to automatically upgrade the quality of files already downloaded when a better quality format becomes available.",
+    "parent": {
+      "image": "11notes/alpine:stable"
+    },
+    "built": {
+      "Lidarr/Lidarr": "https://github.com/Lidarr/Lidarr"
+    },
+    "comparison": {
+      "image": "linuxserver/lidarr"
+    }
+  }
+}
