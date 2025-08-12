@@ -71,21 +71,16 @@
     COPY --from=util / /
     COPY ./rootfs /
 
-# :: Run
+# :: INSTALL
   USER root
-
-  # :: install applications
-    RUN set -ex; \
-      apk --no-cache --update add \
-        icu-libs \
-        sqlite-libs; \
-      mkdir -p ${APP_ROOT}/etc;
-
-  # :: copy filesystem changes and set correct permissions
-    RUN set -ex; \
-      chmod +x -R /usr/local/bin; \
-      chown -R ${APP_UID}:${APP_GID} \
-        ${APP_ROOT};
+  RUN set -ex; \
+    apk --no-cache --update add \
+      icu-libs \
+      sqlite-libs; \
+    mkdir -p ${APP_ROOT}/etc; \
+    chmod +x -R /usr/local/bin; \
+    chown -R ${APP_UID}:${APP_GID} \
+      ${APP_ROOT};
 
 # :: PERSISTENT DATA
   VOLUME ["${APP_ROOT}/etc"]
