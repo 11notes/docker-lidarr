@@ -3,7 +3,11 @@
 # ╚═════════════════════════════════════════════════════╝
 # GLOBAL
   ARG APP_UID=1000 \
-      APP_GID=1000
+      APP_GID=1000 \
+      BUILD_DOTNET_VERSION=9.0.304 \
+      BUILD_SRC=Lidarr/Lidarr.git \
+      BUILD_ROOT=/Lidarr \
+      OPT_ROOT=/opt/lidarr
 
 # :: FOREIGN IMAGES
   FROM 11notes/util AS util
@@ -15,31 +19,55 @@
 # ║                       BUILD                         ║
 # ╚═════════════════════════════════════════════════════╝
 # :: LIDARR
-  FROM alpine AS build
+  FROM 11notes/dotnetsdk:${BUILD_DOTNET_VERSION} AS build
   COPY --from=util-bin / /
   ARG TARGETARCH \
+      TARGETVARIANT \
       APP_VERSION \
       APP_VERSION_BUILD \
-      BUILD_ROOT=/Lidarr
-  ARG BUILD_BIN=${BUILD_ROOT}/Lidarr
+      BUILD_SRC \
+      BUILD_ROOT \
+      BUILD_DOTNET_VERSION \
+      OPT_ROOT
+
+  ENV LIDARRVERSION=${APP_VERSION}.${APP_VERSION_BUILD} \
+      BUILD_SOURCEBRANCHNAME=v${APP_VERSION}.${APP_VERSION_BUILD}
 
   RUN set -ex; \
-    case "${TARGETARCH}" in \
-      "amd64") \
-        eleven github asset Lidarr/Lidarr v${APP_VERSION}.${APP_VERSION_BUILD} Lidarr.master.${APP_VERSION}.${APP_VERSION_BUILD}.linux-musl-core-x64.tar.gz; \
-      ;; \
-      "arm64") \
-        eleven github asset Lidarr/Lidarr v${APP_VERSION}.${APP_VERSION_BUILD} Lidarr.master.${APP_VERSION}.${APP_VERSION_BUILD}.linux-musl-core-${TARGETARCH}.tar.gz; \
-      ;; \
-    esac;
+    eleven git clone ${BUILD_SRC} v${APP_VERSION}.${APP_VERSION_BUILD};
 
   RUN set -ex; \
-    find ./ -type f -name "*.dll" -exec /usr/local/bin/upx -q --best --ultra-brute --no-backup {} &> /dev/null \; ;\
-    mkdir -p /opt/lidarr; \
-    cp -R ${BUILD_ROOT}/* /opt/lidarr; \
-    rm -rf /opt/lidarr/Lidarr.Update;
+    echo '{"sdk":{"version":"'${BUILD_DOTNET_VERSION}'"}}' > ${BUILD_ROOT}/global.json; \
+    sed -i 's#<TreatWarningsAsErrors>true</TreatWarningsAsErrors>#<TreatWarningsAsErrors>false</TreatWarningsAsErrors>#' ${BUILD_ROOT}/src/Directory.Build.props;
 
-    
+  RUN set -ex; \
+    apk --update --no-cache add \
+      yarn \
+      pnpm \
+      bash;
+
+  RUN set -ex; \
+    cd ${BUILD_ROOT}; \
+    case "${TARGETARCH}${TARGETVARIANT}" in \
+      "amd64") export TARGETARCH="x64";; \
+      "armv7") export TARGETVARIANT="";; \
+    esac; \
+    ./build.sh \
+      --backend \
+      --frontend \
+      --packages \
+      -f net6.0 \
+      -r linux-musl-${TARGETARCH}${TARGETVARIANT};
+
+  RUN set -ex; \
+    mkdir -p ${OPT_ROOT}; \
+    rm -f ${BUILD_ROOT}/_output/net*/linux-musl-*/publish/ServiceUninstall.*; \
+    rm -f ${BUILD_ROOT}/_output/net*/linux-musl-*/publish/ServiceInstall.*; \
+    rm -f ${BUILD_ROOT}/_output/net*/linux-musl-*/publish/Lidarr.Windows.*; \
+    cp -af ${BUILD_ROOT}/_output/net*/linux-musl-*/publish/. ${OPT_ROOT}; \
+    cp -af ${BUILD_ROOT}/_output/UI ${OPT_ROOT};
+
+
 # ╔═════════════════════════════════════════════════════╗
 # ║                       IMAGE                         ║
 # ╚═════════════════════════════════════════════════════╝
@@ -57,7 +85,8 @@
         APP_ROOT \
         APP_UID \
         APP_GID \
-        APP_NO_CACHE
+        APP_NO_CACHE \
+        OPT_ROOT
 
   # :: default environment
     ENV APP_IMAGE=${APP_IMAGE} \
@@ -67,27 +96,28 @@
 
   # :: multi-stage
     COPY --from=distroless-localhealth / /
-    COPY --from=build /opt/lidarr /opt/lidarr
+    COPY --from=build --chown=${APP_UID}:${APP_GID} ${OPT_ROOT} ${OPT_ROOT}
     COPY --from=util / /
-    COPY ./rootfs /
+    COPY --chown=${APP_UID}:${APP_GID} ./rootfs /
 
-# :: INSTALL
+# :: Run
   USER root
-  RUN set -ex; \
-    apk --no-cache --update add \
-      icu-libs \
-      sqlite-libs; \
-    mkdir -p ${APP_ROOT}/etc; \
-    chmod +x -R /usr/local/bin; \
-    chown -R ${APP_UID}:${APP_GID} \
-      ${APP_ROOT};
+
+  # :: install dependencies
+    RUN set -ex; \
+      apk --no-cache --update add \
+        icu-libs \
+        sqlite-libs; \
+      mkdir -p ${APP_ROOT}/etc; \
+      chmod +x -R /usr/local/bin;
 
 # :: PERSISTENT DATA
   VOLUME ["${APP_ROOT}/etc"]
 
 # :: MONITORING
   HEALTHCHECK --interval=5s --timeout=2s --start-period=5s \
-    CMD ["/usr/local/bin/localhealth", "http://127.0.0.1:8686/ping"]
+    CMD ["/usr/local/bin/localhealth", "http://127.0.0.1:9696/ping"]
 
 # :: EXECUTE
   USER ${APP_UID}:${APP_GID}
+  ENTRYPOINT ["/usr/local/bin/tini", "--", "/usr/local/bin/entrypoint.sh"]
