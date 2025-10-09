@@ -1,7 +1,7 @@
 ![banner](https://github.com/11notes/defaults/blob/main/static/img/banner.png?raw=true)
 
 # LIDARR
-![size](https://img.shields.io/docker/image-size/11notes/lidarr/2.13.3?color=0eb305)![5px](https://github.com/11notes/defaults/blob/main/static/img/transparent5x2px.png?raw=true)![version](https://img.shields.io/docker/v/11notes/lidarr/2.13.3?color=eb7a09)![5px](https://github.com/11notes/defaults/blob/main/static/img/transparent5x2px.png?raw=true)![pulls](https://img.shields.io/docker/pulls/11notes/lidarr?color=2b75d6)![5px](https://github.com/11notes/defaults/blob/main/static/img/transparent5x2px.png?raw=true)[<img src="https://img.shields.io/github/issues/11notes/docker-LIDARR?color=7842f5">](https://github.com/11notes/docker-LIDARR/issues)![5px](https://github.com/11notes/defaults/blob/main/static/img/transparent5x2px.png?raw=true)![swiss_made](https://img.shields.io/badge/Swiss_Made-FFFFFF?labelColor=FF0000&logo=data:image/svg%2bxml;base64,PHN2ZyB2ZXJzaW9uPSIxIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDMyIDMyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxyZWN0IHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0idHJhbnNwYXJlbnQiLz4KICA8cGF0aCBkPSJtMTMgNmg2djdoN3Y2aC03djdoLTZ2LTdoLTd2LTZoN3oiIGZpbGw9IiNmZmYiLz4KPC9zdmc+)
+![size](https://img.shields.io/docker/image-size/11notes/lidarr/2.14.5?color=0eb305)![5px](https://github.com/11notes/defaults/blob/main/static/img/transparent5x2px.png?raw=true)![version](https://img.shields.io/docker/v/11notes/lidarr/2.14.5?color=eb7a09)![5px](https://github.com/11notes/defaults/blob/main/static/img/transparent5x2px.png?raw=true)![pulls](https://img.shields.io/docker/pulls/11notes/lidarr?color=2b75d6)![5px](https://github.com/11notes/defaults/blob/main/static/img/transparent5x2px.png?raw=true)[<img src="https://img.shields.io/github/issues/11notes/docker-LIDARR?color=7842f5">](https://github.com/11notes/docker-LIDARR/issues)![5px](https://github.com/11notes/defaults/blob/main/static/img/transparent5x2px.png?raw=true)![swiss_made](https://img.shields.io/badge/Swiss_Made-FFFFFF?labelColor=FF0000&logo=data:image/svg%2bxml;base64,PHN2ZyB2ZXJzaW9uPSIxIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDMyIDMyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxyZWN0IHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0idHJhbnNwYXJlbnQiLz4KICA8cGF0aCBkPSJtMTMgNmg2djdoN3Y2aC03djdoLTZ2LTdoLTd2LTZoN3oiIGZpbGw9IiNmZmYiLz4KPC9zdmc+)
 
 Run Lidarr smaller, lightweight and more secure than ever
 
@@ -30,8 +30,8 @@ Below you find a comparison between this image and the most used or original one
 
 | **image** | **size on disk** | **init default as** | **[distroless](https://github.com/11notes/RTFM/blob/main/linux/container/image/distroless.md)** | supported architectures
 | ---: | ---: | :---: | :---: | :---: |
-| 11notes/lidarr:2.13.3 | 175MB | 1000:1000 | ❌ | amd64, arm64, armv7 |
-| linuxserver/lidarr | 287MB | 0:0 | ❌ | amd64, arm64 |
+| 11notes/lidarr:2.14.5 | 180MB | 1000:1000 | ❌ | amd64, arm64, armv7 |
+| linuxserver/lidarr | 292MB | 0:0 | ❌ | amd64, arm64 |
 
 **Why is this image not distroless?** I would have loved to create a distroless, single binary image, sadly the way that Lidarr is setup makes it really difficult to compile a static binary from source. Enabling AOT breaks almost 30% of used libraries because they are not setup to be statically linked (like Assembly.GetExecutingAssembly().Location). It’s also not fixable with a single PR. This is something the Lidarr team would need to do.
 
@@ -51,7 +51,7 @@ x-lockdown: &lockdown
 
 services:
   lidarr:
-    image: "11notes/lidarr:2.13.3"
+    image: "11notes/lidarr:2.14.5"
     <<: *lockdown
     environment:
       TZ: "Europe/Zurich"
@@ -91,19 +91,19 @@ To find out how you can change the default UID/GID of this container image, cons
 # MAIN TAGS 🏷️
 These are the main tags for the image. There is also a tag for each commit and its shorthand sha256 value.
 
-* [2.13.3](https://hub.docker.com/r/11notes/lidarr/tags?name=2.13.3)
-* [2.13.3-unraid](https://hub.docker.com/r/11notes/lidarr/tags?name=2.13.3-unraid)
+* [2.14.5](https://hub.docker.com/r/11notes/lidarr/tags?name=2.14.5)
+* [2.14.5-unraid](https://hub.docker.com/r/11notes/lidarr/tags?name=2.14.5-unraid)
 
 ### There is no latest tag, what am I supposed to do about updates?
-It is of my opinion that the ```:latest``` tag is dangerous. Many times, I’ve introduced **breaking** changes to my images. This would have messed up everything for some people. If you don’t want to change the tag to the latest [semver](https://semver.org/), simply use the short versions of [semver](https://semver.org/). Instead of using ```:2.13.3``` you can use ```:2``` or ```:2.13```. Since on each new version these tags are updated to the latest version of the software, using them is identical to using ```:latest``` but at least fixed to a major or minor version.
+It is of my opinion that the ```:latest``` tag is dangerous. Many times, I’ve introduced **breaking** changes to my images. This would have messed up everything for some people. If you don’t want to change the tag to the latest [semver](https://semver.org/), simply use the short versions of [semver](https://semver.org/). Instead of using ```:2.14.5``` you can use ```:2``` or ```:2.14```. Since on each new version these tags are updated to the latest version of the software, using them is identical to using ```:latest``` but at least fixed to a major or minor version.
 
 If you still insist on having the bleeding edge release of this app, simply use the ```:rolling``` tag, but be warned! You will get the latest version of the app instantly, regardless of breaking changes or security issues or what so ever. You do this at your own risk!
 
 # REGISTRIES ☁️
 ```
-docker pull 11notes/lidarr:2.13.3
-docker pull ghcr.io/11notes/lidarr:2.13.3
-docker pull quay.io/11notes/lidarr:2.13.3
+docker pull 11notes/lidarr:2.14.5
+docker pull ghcr.io/11notes/lidarr:2.14.5
+docker pull quay.io/11notes/lidarr:2.14.5
 ```
 
 # UNRAID VERSION 🟠
@@ -127,4 +127,4 @@ This image supports unraid by default. Simply add **-unraid** to any tag and the
 # ElevenNotes™️
 This image is provided to you at your own risk. Always make backups before updating an image to a different version. Check the [releases](https://github.com/11notes/docker-lidarr/releases) for breaking changes. If you have any problems with using this image simply raise an [issue](https://github.com/11notes/docker-lidarr/issues), thanks. If you have a question or inputs please create a new [discussion](https://github.com/11notes/docker-lidarr/discussions) instead of an issue. You can find all my other repositories on [github](https://github.com/11notes?tab=repositories).
 
-*created 13.09.2025, 21:34:30 (CET)*
+*created 09.10.2025, 07:26:43 (CET)*

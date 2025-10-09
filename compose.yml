@@ -9,7 +9,7 @@ x-lockdown: &lockdown
 
 services:
   lidarr:
-    image: "11notes/lidarr:2.13.3"
+    image: "11notes/lidarr:2.14.5"
     <<: *lockdown
     environment:
       TZ: "Europe/Zurich"
