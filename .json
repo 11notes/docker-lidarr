@@ -4,11 +4,11 @@
   "root": "/lidarr",
   "build": {
     "args": {
-      "version_build": "4711"
+      "version_build": "4836"
     }
   },
   "semver": {
-    "version": "2.13.3"
+    "version": "2.14.5"
   },
   "readme": {
     "description": "Run Lidarr smaller, lightweight and more secure than ever",
